@@ -20,15 +20,15 @@ section .data
 	
 section .text
 _start:
-	mov eax, 4		; sys_write
-	mov ebx, 1		; stdout
+	mov eax, 4	; sys_write
+	mov ebx, 1	; stdout
 	mov ecx, cmsg	; msg to output
 	mov edx, clen	; msg's length
 	int 0x80
 	
-	mov ecx, 29		; TODO: Change this value to any you want.
+	mov ecx, 29	; TODO: Change this value to any you want.
 	cmp ecx, 30
-	je print_je		; If ecx is equal to 30
+	je print_je	; If ecx is equal to 30
 	jle print_jle   ; If ecx is less than 30
 	
 	mov eax, 4
@@ -58,7 +58,7 @@ print_jle:
 	jmp exit_it
 	
 exit_it:
-	mov eax, 1		; sys_exit
-	mov ebx, 0		; return 0
-	int 0x80		; syscall
+	mov eax, 1	; sys_exit
+	mov ebx, 0	; return 0
+	int 0x80	; syscall
 
