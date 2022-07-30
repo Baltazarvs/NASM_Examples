@@ -18,14 +18,14 @@ section .bss
 	
 section .text
 _start:
-	mov eax, 4		; sys_write
-	mov ebx, 1		; stdout
+	mov eax, 4	; sys_write
+	mov ebx, 1	; stdout
 	mov ecx, msg	; msg's source
 	mov edx, len	; msg's len
 	int 0x80
 	
-	mov eax, 3		; sys_read
-	mov ebx, 0		; stdin
+	mov eax, 3	; sys_read
+	mov ebx, 0	; stdin
 	mov ecx, buff	; buffer buff
 	mov edx, 0x1E	; buff's size (30 bytes)
 	int 0x80
@@ -43,5 +43,5 @@ _start:
 	int 0x80
 	
 	mov eax, 1
-    mov ebx, 0
-    int 0x80
+	mov ebx, 0
+    	int 0x80
