@@ -15,8 +15,8 @@ _start:
 	mov edx, nlen   ; size of name
 	int 0x80        
 
-	mov eax, 3	    ; sys_read
-	mov ebx, 0	    ; stdin
+	mov eax, 3	; sys_read
+	mov ebx, 0	; stdin
 	mov ecx, buff	; buffer to store input in (buff)
 	mov edx, 0x1E	; buffer size (0x1E = 30)
 	int 0x80
