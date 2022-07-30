@@ -20,10 +20,10 @@ section .data
 	
 section .text
 _start:
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, cmsg
-	mov edx, clen
+	mov eax, 4		; sys_write
+	mov ebx, 1		; stdout
+	mov ecx, cmsg	; msg to output
+	mov edx, clen	; msg's length
 	int 0x80
 	
 	mov ecx, 29		; TODO: Change this value to any you want.
@@ -58,7 +58,7 @@ print_jle:
 	jmp exit_it
 	
 exit_it:
-	mov eax, 1
-	mov ebx, 0
-	int 0x80
+	mov eax, 1		; sys_exit
+	mov ebx, 0		; return 0
+	int 0x80		; syscall
 
