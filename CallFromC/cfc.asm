@@ -1,3 +1,8 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Created by Baltazarus
+; NASM_Examples
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 %define SYS_WRITE   4
 %define SYS_READ    3
 %define STDOUT      1
