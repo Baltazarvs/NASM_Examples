@@ -33,7 +33,6 @@ _start:
     mov ecx, 0                      ; Loop counter, starting from 0
     mov edx, 30                     ; Length of the string
     mov ebx, edx                    ; Store length inside the ebx register which value will be decreased for offset
-    jmp main_loop
 
 main_loop:
     cmp ecx, edx                    ; Compare the counter and the length of string
