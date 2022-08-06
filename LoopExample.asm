@@ -15,7 +15,6 @@ section .text
 _start:
     mov ecx, 0      ; Assign the counter an initial value of 0 (i = 0)
     push ecx        ; Push to the stack ecx, with the 0 as initial value.
-    jmp loop_it     ; Run the loop;
 
 loop_it:
     mov eax, 4      ; sys_write
