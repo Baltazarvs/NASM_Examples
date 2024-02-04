@@ -1,119 +1,80 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Created by Baltazarus
-; NASM_Examples
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-global _start
-
 %define sys_write   4
 %define sys_read    3
 %define sys_exit    1
 
 section .data
-    brick: db '*'                   ; This will be used for printing stars.
-    nl: db 0xA                      ; This is for new lines after finishing line
-
-    imsg: db "How much rows do you wish [9]: ", 0x0
-    ilen: equ $ - imsg
-
-    izmsg: db "0 rows requested, exiting the program.", 0xA, 0x0
-    izlen: equ $ - izmsg
-
+    msg: db "Enter number of rows: "
+    len: equ $-msg
+    star_chr: db '*'
+    nl_chr: db 0x0A
+    
 section .bss
-    rows: resb 1                    ; Contains number of the rows of the stars. It will be converted to number after inputing.
+    numb_buff: resb 1
 
 section .text
-_start:
-    mov ecx, imsg
-    mov edx, ilen
-    call print_text                 ; Not specifying EAX and EBX here since it's done in print_text function.
+    global _start
 
-    mov eax, sys_read               ; sys_read. Read user input and store it as rows.
+_start:
+    mov ecx, msg
+    mov edx, len
+    call _print_it
+    
+    mov eax, sys_read
     mov ebx, 0
-    mov ecx, rows
+    mov ecx, numb_buff
     mov edx, 1
     int 0x80
-
-    cmp [rows], byte '0'            ; Check if user inputed 0 rows
-    je input_zero_msg               ; If so, print exit message and exit.
-
-    cmp [rows], byte '1'            ; If there is only one row, just print one star.
-    je print_one_star               ; Jump to output one star and new line.
-
-    sub [rows], byte '0'            ; Convert rows counter to the number
-
-    mov ecx, 1                      ; Loop counter, starting from 1 (i = 1) because it will control stars' amount too.
-    mov ebx, ecx                    ; EBX controls amount of stars per line.
-
-main_loop:
-    cmp ecx, [rows]                 ; If counter equals limit (rows), exit
+    
+    sub [numb_buff], byte '0'
+    add [numb_buff], byte 1
+    
+    mov ecx, nl_chr
+    mov edx, 1
+    call _print_it
+    
+    mov ecx, 0
+    
+.loop:
+    cmp ecx, [numb_buff]
     je exit
+    
+    push ecx
+    mov edx, ecx
+    mov ecx, 0
+    
+    .loop_col:
+        cmp ecx, edx
+        je .loop_col_end
+        
+        push ecx
+        push edx
+        mov ecx, star_chr
+        mov edx, 1
+        call _print_it
+        pop edx
+        pop ecx
+        
+        inc ecx
+        jmp .loop_col
+        
+    .loop_col_end:
+        mov ecx, nl_chr
+        mov edx, 1
+        call _print_it
+    
+    pop ecx
+    inc ecx
+    jmp .loop
 
-    mov edx, 0
-    jmp print_stars
+exit:
+    mov eax, sys_exit
+    int 0x80
 
-    inc ecx                         ; Increase the counter (++i)
-    jmp main_loop                   ; continue;
-
-print_stars:
-    cmp edx, ebx                    ; Check if counter equals the limit of stars per line.
-    je print_new_line               ; If so, print new line and go back to main loop.
-
-    push ecx                        ; Push main loop's counter to the stack because of the syscall.
-    push edx                        ; And so EDX (this loop's counter).
-
-    mov ecx, brick
-    mov edx, 1
-    call print_text
-
-    pop edx                         ; Pop EDX from the stack after finishing.
-    pop ecx                         ; Pop ECX from the stack after finishing.
-
-    inc edx
-    jmp print_stars
-
-print_new_line:
-    push ecx                        ; Push counter to the stack because of register requirement of syscall (print_text)
-    mov ecx, nl
-    mov edx, 1
-    call print_text
-    pop ecx                         ; Pop counter from the stack.
-
-    inc ebx                         ; Increase amount of stars to be printed per line (same as ECX counter).
-    mov ecx, ebx                    ; Since ECX (main_loop's counter) is always equal to number of stars per line...
-    dec ecx                         ; Decrease it since it needs to match rows number (remove if want to experiment).
-    jmp main_loop
-
-print_text:
-    mov ebp, esp
-    push ebx                        ; Push stars per line counter because of the syscall register requirement (STDOUT)
-
+_print_it:
+    push ebp
+    mov ebp,esp
     mov eax, sys_write
     mov ebx, 1
     int 0x80
-
-    pop ebx                         ; Pop EBX from the stack after finishing.
-    mov esp, ebp
+    pop ebp
     ret
-
-input_zero_msg:                     ; Here we don't need any stack operations for ECX and EBX since this will terminate the program.
-    mov ecx, izmsg
-    mov edx, izlen
-    call print_text
-    jmp exit
-
-print_one_star:
-    mov ecx, brick
-    mov edx, 1
-    call print_text                 ; Print one star
-
-    mov ecx, nl
-    mov edx, 1
-    call print_text                 ; Print new line
-
-    jmp exit                        ; Exit
-
-exit:
-    mov eax, sys_exit               ; sys_exit call.
-    mov ebx, 0
-    int 0x80                        ; syscall
